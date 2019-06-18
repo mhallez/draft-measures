@@ -100,7 +100,7 @@ define "Statin Not Given at Discharge":
 			and (singleton from NoStatin.reasonCode in "Medical Reason"
 				or singleton from NoStatin.reasonCode in "Patient Refusal")
 
-//Folling function copied from MATGlobalCommonFunctions 2.0 in cqf-measures github repo
+//Following function copied from MATGlobalCommonFunctions 2.0 in cqf-measures github repo
 define function "Normalize Onset"(onset Choice<FHIR.dateTime, FHIR.Age, FHIR.Period, FHIR.Range, FHIR.string>):
 	if onset is FHIR.dateTime then Interval[onset.value, onset.value]
 	else if onset is FHIR.Period then FHIRHelpers.ToInterval(onset as FHIR.Period)
@@ -145,5 +145,7 @@ define "Comfort Measures during Hospitalization":
 define "Intervention Comfort Measures":
 	(["ProcedureRequest": "Comfort Measures"] P 
 		where P.intent = 'order')
-		union ["Procedure": "Comfort Measures"]
+		union
+	        (["Procedure": "Comfort Measures"] InterventionPerformed
+	 	where InterventionPerformed.status = 'completed')
 
